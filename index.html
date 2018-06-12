@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Funny Gifs</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+
+<body>
+
+<div class="container">
+    <div class="row">
+        <!--The Rules-->
+        <div class="col-lg-4">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Create a Giphy search button</h3>
+                </div>
+                <div class="panel-body">
+    <!-- Rendered Buttons will get spawned Here  -->
+    <div id="buttons-view"></div>
+
+    <form id="gif-form">
+        <label for="gif-input">Add Gif Button</label>
+        <input type="text" id="gif-input">
+        <br>
+
+        <!-- Button triggers new gif to be added -->
+        <input class ="btn btn-danger btn-block" id="add-gif" type="submit" value="Press here and Add a Gif Button">
+    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Gif panel -->
+        <div class="col-lg-8">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Your Gifs</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="panel-body">
+                        <!-- gifs will Get Dumped Dere -->
+                        <div id="gifs-view"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        // Initial array of gifs
+        var topic = ["Fail", "Explosion", "Crash", "Funny"];
+
+        // displaygifInfo function re-renders the HTML to display the appropriate content
+        function displayGif() {
+
+            var gif = $(this).attr("data-name");
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+                gif + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+            // Creating an AJAX call for the specific gif button being clicked
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+            // After data comes back from the request
+                .then(function(response) {
+                    console.log(queryURL);
+
+                    console.log(response);
+                    // storing the data from the AJAX request in the results variable
+                    var results = response.data;
+
+                    // Looping through each result item
+                    for (var i = 0; i < results.length; i++) {
+
+                        // Creating and storing a div tag
+                        var gifDiv = $("<div>");
+
+                        // Creating a paragraph tag with the result item's rating
+                        var p = $("<p>").text("Rating: " + results[i].rating);
+
+                        // Creating and storing an image tag
+                        var gifImage = $("<img>");
+                        // Setting the src attribute of the image to a property pulled off the result item
+                        gifImage.attr("src", results[i].images.fixed_height.url);
+
+                        // Appending the paragraph and image tag to the animalDiv
+                        gifDiv.append(p);
+                        gifDiv.append(gifImage);
+
+                        // Prependng the gifDiv to the HTML page in the "#gifs-appear-here" div
+                        $("#gifs-view").prepend(gifDiv);
+                    }
+            });
+
+        }
+
+        // Function for displaying gif data
+        function renderButtons() {
+
+            // Deleting the gifs prior to adding new gifs
+            // (this is necessary otherwise you will have repeat buttons)
+            $("#buttons-view").empty();
+
+            // Looping through the array of gifs
+            for (var i = 0; i < topic.length; i++) {
+
+                // Then dynamicaly generating buttons for each gif in the array
+                var a = $("<button>");
+                // Adding a class of gif-btn to our button
+                a.addClass("gif-btn");
+                // Adding a data-attribute
+                a.attr("data-name", topic[i]);
+                // Providing the initial button text
+                a.text(topic[i]);
+                // Adding the button to the buttons-view div
+                $("#buttons-view").append(a);
+            }
+        }
+
+        // This function handles events where a gif button is clicked
+        $("#add-gif").on("click", function(event) {
+            event.preventDefault();
+            // This line grabs the input from the textbox
+            var gif = $("#gif-input").val().trim();
+
+            // Adding gif from the textbox to our array
+            topic.push(gif);
+
+            // Calling renderButtons which handles the processing of our gif array
+            renderButtons();
+        });
+
+        // Adding a click event listener to all elements with a class of "gif-btn"
+        $(document).on("click", ".gif-btn", displayGif);
+
+        // Calling the renderButtons function to display the intial buttons
+        renderButtons();
+        $("img").on("click", function() {
+            // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+            var state = $(this).attr("data-state");
+            // If the clicked image's state is still, update its src attribute to what its data-animate value is.
+            // Then, set the image's data-state to animate
+            // Else set src to the data-still value
+            if (state === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+            } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+            }
+        });
+        //I have an idea for one of the bonus activities...
+        // The download future over the GIFS will be something similar
+        // to  the jQuery activity we've seen in TIMERS 'activity 20- jQueryToDo' , where with the
+        // input form and a button you create a div with span, that has a removing future "X"
+        // We can modify it to instead delete the span to make an "on click" that saves the gif as a gif on
+        // your local drive.
+    </script>
+</div>
+</body>
+
+</html>

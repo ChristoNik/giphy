@@ -1,0 +1,28 @@
+.container {
+     margin-left: 10px;
+ }
+
+ .navbar {
+     margin-bottom: 0;
+     background-color: #d9edf7!important;
+     font-family: 'Shadows Into Light', cursive;
+ }
+.imgspan {
+    float:left;
+    display:inline;
+}
+body {
+    font-family: font-family, 'Arial', Helvetica, sans-serif;
+    background: url("../images/g_logo.png");
+    background-hight:100%;
+    background-wight:100%;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+.gif-btn {
+    margin: 10px;
+}
+#gifs-view {
+    float:left;
+    display:inline;
+}
