@@ -32,6 +32,9 @@
         <input class ="btn btn-danger btn-block" id="add-gif" type="submit" value="Press here and Add a Gif Button">
     </form>
                 </div>
+                <div class="panel-body">
+                    <a href="https://giphy.com/"><img src="assets/images/g_logo.png" alt="giphy logo"></a>
+                </div>
             </div>
         </div>
         <!-- Gif panel -->
@@ -40,10 +43,10 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Your Gifs</h3>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" id="gifViewPanel">
                     <div class="panel-body">
                         <!-- gifs will Get Dumped Dere -->
-                        <div id="gifs-view"></div>
+                        <div id="gifs-view" class="col-md-12"></div>
                     </div>
                 </div>
             </div>
@@ -76,24 +79,48 @@
                     console.log(response);
                     // storing the data from the AJAX request in the results variable
                     var results = response.data;
-
+                    $("#gifs-view").empty();
                     // Looping through each result item
                     for (var i = 0; i < results.length; i++) {
 
                         // Creating and storing a div tag
                         var gifDiv = $("<div>");
-
+                        gifDiv.attr("class", "col-md-6");
                         // Creating a paragraph tag with the result item's rating
                         var p = $("<p>").text("Rating: " + results[i].rating);
+                            
+                        var link = $("<a>");
+                        link.attr("href", results[i].url);    
+                        link.attr("target", "_blank");
+                        link.attr("class", "link");
+
+                        var h3 = $("<h3>").text(results[i].title);
 
                         // Creating and storing an image tag
                         var gifImage = $("<img>");
+                        gifImage.attr("class", "gifImage")
+                        //gifImage.attr("data-value", i);
                         // Setting the src attribute of the image to a property pulled off the result item
-                        gifImage.attr("src", results[i].images.fixed_height.url);
-
+                        gifImage.attr("src", results[i].images.fixed_height_still.url);
+                        gifImage.attr("data-animate", results[i].images.fixed_height.url);
+                        gifImage.attr("data-still", results[i].images.fixed_height_still.url);
+                        gifImage.attr("status", "still");
                         // Appending the paragraph and image tag to the animalDiv
-                        gifDiv.append(p);
+                        h3.css("min-height", "50px");
+                        h3.css("max-height", "100px");
+
+                        gifDiv.css("width", "50%");
+                        gifDiv.css("height", "50%")
+
+                        gifImage.css("max-width", "250px")
+                        gifImage.css("min-height", "200px")
+                        gifDiv.css("padding", "20px");
+                        $(".gifViewPanel").css("padding", "0px");
+
+                        link.append(h3);
+                        gifDiv.append(link);
                         gifDiv.append(gifImage);
+                        gifDiv.append(p);
 
                         // Prependng the gifDiv to the HTML page in the "#gifs-appear-here" div
                         $("#gifs-view").prepend(gifDiv);
@@ -104,18 +131,17 @@
 
         // Function for displaying gif data
         function renderButtons() {
-
             // Deleting the gifs prior to adding new gifs
             // (this is necessary otherwise you will have repeat buttons)
             $("#buttons-view").empty();
-
+            
             // Looping through the array of gifs
             for (var i = 0; i < topic.length; i++) {
 
                 // Then dynamicaly generating buttons for each gif in the array
                 var a = $("<button>");
                 // Adding a class of gif-btn to our button
-                a.addClass("gif-btn");
+                a.addClass("gif-btn btn btn-danger btn-sm");
                 // Adding a data-attribute
                 a.attr("data-name", topic[i]);
                 // Providing the initial button text
@@ -130,12 +156,14 @@
             event.preventDefault();
             // This line grabs the input from the textbox
             var gif = $("#gif-input").val().trim();
-
+            // Checks if button already exists or if input is blank
+            if (topic.indexOf(gif) === -1 && gif !== "") {
             // Adding gif from the textbox to our array
             topic.push(gif);
 
             // Calling renderButtons which handles the processing of our gif array
             renderButtons();
+            }
         });
 
         // Adding a click event listener to all elements with a class of "gif-btn"
@@ -143,18 +171,18 @@
 
         // Calling the renderButtons function to display the intial buttons
         renderButtons();
-        $("img").on("click", function() {
+        $(document).on("click", ".gifImage", function() {
             // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
-            var state = $(this).attr("data-state");
+            var state = $(this).attr("status");
             // If the clicked image's state is still, update its src attribute to what its data-animate value is.
             // Then, set the image's data-state to animate
             // Else set src to the data-still value
             if (state === "still") {
                 $(this).attr("src", $(this).attr("data-animate"));
-                $(this).attr("data-state", "animate");
+                $(this).attr("status", "animate");
             } else {
                 $(this).attr("src", $(this).attr("data-still"));
-                $(this).attr("data-state", "still");
+                $(this).attr("status", "still");
             }
         });
         //I have an idea for one of the bonus activities...
